@@ -1,6 +1,6 @@
 <?php
 
-namespace OmniaDigital\LivewireCalendar;
+namespace Omnia\LivewireCalendar;
 
 use Carbon\Carbon;
 use Exception;
@@ -11,7 +11,7 @@ use Livewire\Component;
 
 /**
  * Class LivewireCalendar
- * @package OmniaDigital\LivewireCalendar
+ * @package Omnia\LivewireCalendar
  * @property Carbon $startsAt
  * @property Carbon $endsAt
  * @property Carbon $gridStartsAt
