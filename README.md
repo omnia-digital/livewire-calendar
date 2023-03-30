@@ -267,7 +267,9 @@ If you discover any security related issues, please email santibanez.andres@gmai
 
 ## Credits
 
-- [Andrés Santibáñez](https://github.com/omnia-digital)
+- [Osei Quashie](https://github.com/Osimba)
+- [Josh Torres](https://github.com/joshtorres)
+- [Andrés Santibáñez](https://github.com/asantibanez)
 - [All Contributors](../../contributors)
 
 ## License
