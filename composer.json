@@ -1,17 +1,28 @@
 {
-    "name": "asantibanez/livewire-calendar",
+    "name": "omnia-digital/livewire-calendar",
     "description": "Laravel Livewire calendar component",
     "keywords": [
-        "asantibanez",
+        "omnia",
+        "omnia-digital",
         "livewire-calendar"
     ],
-    "homepage": "https://github.com/asantibanez/livewire-calendar",
+    "homepage": "https://github.com/omnia-digital/livewire-calendar",
     "license": "MIT",
     "type": "library",
     "authors": [
         {
             "name": "Andrés Santibáñez",
             "email": "santibanez.andres@gmail.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Osei Osimba",
+            "email": "osei@omniadigital.io",
+            "role": "Developer"
+        },
+        {
+            "name": "Josh Torres",
+            "email": "josht@omniadigital.io",
             "role": "Developer"
         }
     ],
@@ -26,12 +37,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Asantibanez\\LivewireCalendar\\": "src"
+            "Omnia\\LivewireCalendar\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Asantibanez\\LivewireCalendar\\Tests\\": "tests"
+            "Omnia\\LivewireCalendar\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -45,10 +56,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Asantibanez\\LivewireCalendar\\LivewireCalendarServiceProvider"
+                "Omnia\\LivewireCalendar\\LivewireCalendarServiceProvider"
             ],
             "aliases": {
-                "LivewireCalendar": "Asantibanez\\LivewireCalendar\\LivewireCalendarFacade"
+                "LivewireCalendar": "Omnia\\LivewireCalendar\\LivewireCalendarFacade"
             }
         }
     }

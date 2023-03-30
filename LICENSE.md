@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) Andrés Santibáñez
+Copyright (c) Omnia Digital
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

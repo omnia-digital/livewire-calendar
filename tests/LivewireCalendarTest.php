@@ -1,8 +1,8 @@
 <?php
 
-namespace Asantibanez\LivewireCalendar\Tests;
+namespace OmniaDigital\LivewireCalendar\Tests;
 
-use Asantibanez\LivewireCalendar\LivewireCalendar;
+use OmniaDigital\LivewireCalendar\LivewireCalendar;
 use Livewire\LivewireManager;
 use Livewire\Testing\TestableLivewire;
 
