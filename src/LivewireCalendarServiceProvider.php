@@ -1,6 +1,6 @@
 <?php
 
-namespace OmniaDigital\LivewireCalendar;
+namespace Omnia\LivewireCalendar;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
