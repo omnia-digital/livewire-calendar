@@ -3,7 +3,7 @@
 This package allows you to build a Livewire monthly calendar grid to show events for each day. Events can be loaded
 from within the component and will be presented on each day depending on the date of the event.
 
-Special thanks to asantibanez/livewire-calendar as this originally was a fork of that package, but it has progressed much since then.
+Special thanks to asantibanez/livewire-calendar as this originally was a fork of that package. We are using this new package in one of our large projects so we will be actively maintaining.
 
 ## Preview
 
@@ -263,7 +263,7 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ### Security
 
-If you discover any security related issues, please email santibanez.andres@gmail.com instead of using the issue tracker.
+If you discover any security related issues, please email us at info@omniadigital.io instead of using the issue tracker.
 
 ## Credits
 
