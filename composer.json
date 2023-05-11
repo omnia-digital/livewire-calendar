@@ -11,6 +11,11 @@
     "type": "library",
     "authors": [
         {
+            "name": "Josh Torres",
+            "email": "josht@omniadigital.io",
+            "role": "Developer"
+        },
+        {
             "name": "Andrés Santibáñez",
             "email": "santibanez.andres@gmail.com",
             "role": "Developer"
@@ -19,16 +24,11 @@
             "name": "Osei Quashie",
             "email": "osei@omniadigital.io",
             "role": "Developer"
-        },
-        {
-            "name": "Josh Torres",
-            "email": "josht@omniadigital.io",
-            "role": "Developer"
         }
     ],
     "require": {
-        "php": "^7.2|^8.0",
-        "illuminate/support": "^6.0|^7.0|^8.0|^9.0",
+        "php": "^7.2|^8.0|^8.1|^8.2",
+        "illuminate/support": "^6.0|^7.0|^8.0|^9.0|^10.0",
         "livewire/livewire": "^2.0"
     },
     "require-dev": {
