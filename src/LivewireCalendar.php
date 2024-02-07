@@ -226,6 +226,18 @@ class LivewireCalendar extends Component
         //
     }
 
+    public function getId()
+    {
+        if (!empty($this->__id)) {
+            $id = $this->__id;
+        } else if (!empty($this->id)) {
+            $id = $this->id;
+        } else {
+            $id = 'livewire-calendar-' . uniqid();
+        }
+        return $id;
+    }
+
     /**
      * @return Factory|View
      * @throws Exception
@@ -236,7 +248,7 @@ class LivewireCalendar extends Component
 
         return view($this->calendarView)
             ->with([
-                'componentId' => $this->id,
+                'componentId' => $this->getId(),
                 'monthGrid' => $this->monthGrid(),
                 'events' => $events,
                 'getEventsForDay' => function ($day) use ($events) {
