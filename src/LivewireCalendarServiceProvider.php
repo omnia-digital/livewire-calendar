@@ -12,6 +12,10 @@ class LivewireCalendarServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->app->bind('livewire-calendar', function () {
+            return new LivewireCalendar();
+        });
+
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'livewire-calendar');
 
         if ($this->app->runningInConsole()) {
