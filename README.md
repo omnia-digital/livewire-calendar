@@ -35,9 +35,10 @@ You can use `make:livewire` to create a new component. For example.
 php artisan make:livewire AppointmentsCalendar
 ```
 
-In the `AppointmentsCalendar` class, instead of extending from the base `Component` Livewire class,
-extend from `LivewireCalendar`. Also, remove the `render` method.
-You'll have a class similar to this snippet.
+- In the `AppointmentsCalendar` class, instead of extending from the base `Component` Livewire class,
+extend from `LivewireCalendar`. 
+- **Remove the `render` method or you will override the parent and the calendar will not display.**
+- You'll have a class similar to this snippet.
 
 ``` php
 class AppointmentsCalendar extends LivewireCalendar
