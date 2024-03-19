@@ -120,8 +120,6 @@ Example
 
 This will render a calendar grid.
 
-![example](https://github.com/omnia-digital/livewire-calendar/raw/master/example.png)
-
 By default, the component will render the current month. If you want to change the
 starting month, you can set the `year` and `month` props.
 
