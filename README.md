@@ -121,14 +121,26 @@ Example
 This will render a calendar grid.
 
 By default, the component will render the current month. If you want to change the
-starting month, you can set the `year` and `month` props.
+starting month, you can set the `initialYear` and `initialMonth` props.
 
  Example
 
  ```blade
 <livewire:appointments-calendar
-    year="2019"
-    month="12"
+    initialYear="2019"
+    initialMonth="12"
+/>
+ ```
+
+If you use it as a nested component, you can use variables and make it dynamic (:key prop will force livewire to re-render calendar).
+
+Example
+
+ ```blade
+<livewire:appointments-calendar
+    initialYear="{{ $currentYear }}"
+    initialMonth="{{ $currentMonth }}"
+    :key="$currentYear.$currentMonth"
 />
  ```
 
