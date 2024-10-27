@@ -163,8 +163,8 @@ class LivewireCalendar extends Component
 
     public function calculateGridStartsEnds()
     {
-        $this->gridStartsAt = $this->startsAt->clone()->startOfWeek($this->weekStartsAt);
-        $this->gridEndsAt = $this->endsAt->clone()->endOfWeek($this->weekEndsAt);
+        $this->gridStartsAt = $this->startsAt->clone()->startOfWeek($this->weekStartsAt)->shiftTimezone(config('app.timezone'));;
+        $this->gridEndsAt = $this->endsAt->clone()->endOfWeek($this->weekEndsAt)->shiftTimezone(config('app.timezone'));;
     }
 
     /**
