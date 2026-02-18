@@ -301,4 +301,35 @@ class LivewireCalendarTest extends TestCase
 
         $this->assertEquals('bg-blue-100', $component->get('dragAndDropClasses'));
     }
+
+    public function test_view_mode_defaults_to_month()
+    {
+        $component = $this->createComponent([]);
+
+        $this->assertEquals('month', $component->get('viewMode'));
+    }
+
+    public function test_can_switch_view_modes()
+    {
+        $component = $this->createComponent([]);
+
+        $component->call('setViewMode', 'week');
+        $this->assertEquals('week', $component->get('viewMode'));
+
+        $component->call('setViewMode', 'day');
+        $this->assertEquals('day', $component->get('viewMode'));
+    }
+
+    public function test_can_navigate_week_and_day()
+    {
+        $component = $this->createComponent([]);
+
+        $selectedDate = Carbon::parse($component->get('selectedDate'));
+
+        $component->call('goToNextWeek');
+        $this->assertTrue(Carbon::parse($component->get('selectedDate'))->isSameDay($selectedDate->copy()->addWeek()));
+
+        $component->call('goToPreviousDay');
+        $this->assertTrue(Carbon::parse($component->get('selectedDate'))->isSameDay($selectedDate->copy()->addDays(6)));
+    }
 }

@@ -232,6 +232,14 @@ The component has 3 public methods that can help navigate forward and backward t
 - `goToNextMonth`
 - `goToCurrentMonth`
 
+Phase 2 adds mobile-focused week/day navigation methods:
+- `goToPreviousWeek`
+- `goToNextWeek`
+- `goToPreviousDay`
+- `goToNextDay`
+- `goToToday`
+- `setViewMode('month'|'week'|'day')`
+
 You can use these methods on extra views using `before-calendar-view` or `after-calendar-view` explained below.
 
 ### Advanced usage

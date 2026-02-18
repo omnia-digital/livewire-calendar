@@ -12,24 +12,6 @@ use Livewire\Component;
 /**
  * Class LivewireCalendar
  * @package Omnia\LivewireCalendar
- * @property Carbon $startsAt
- * @property Carbon $endsAt
- * @property Carbon $gridStartsAt
- * @property Carbon $gridEndsAt
- * @property int $weekStartsAt
- * @property int $weekEndsAt
- * @property string $calendarView
- * @property string $dayView
- * @property string $eventView
- * @property string $dayOfWeekView
- * @property string $beforeCalendarWeekView
- * @property string $afterCalendarWeekView
- * @property string $dragAndDropClasses
- * @property int $pollMillis
- * @property string $pollAction
- * @property boolean $dragAndDropEnabled
- * @property boolean $dayClickEnabled
- * @property boolean $eventClickEnabled
  */
 class LivewireCalendar extends Component
 {
@@ -59,11 +41,17 @@ class LivewireCalendar extends Component
     public $dayClickEnabled;
     public $eventClickEnabled;
 
+    public $viewMode;
+    public $selectedDate;
+    public $mobileHeaderEnabled;
+    public $swipeNavigationEnabled;
+
     protected $casts = [
         'startsAt' => 'date',
         'endsAt' => 'date',
         'gridStartsAt' => 'date',
         'gridEndsAt' => 'date',
+        'selectedDate' => 'date',
     ];
 
     public function mount($initialYear = null,
@@ -81,19 +69,27 @@ class LivewireCalendar extends Component
                           $dragAndDropEnabled = true,
                           $dayClickEnabled = true,
                           $eventClickEnabled = true,
+                          $viewMode = 'month',
+                          $mobileHeaderEnabled = true,
+                          $swipeNavigationEnabled = true,
+                          $selectedDate = null,
                           $extras = [])
     {
         $this->weekStartsAt = $weekStartsAt ?? Carbon::SUNDAY;
         $this->weekEndsAt = $this->weekStartsAt == Carbon::SUNDAY
             ? Carbon::SATURDAY
-            : collect([0,1,2,3,4,5,6])->get($this->weekStartsAt + 6 - 7)
-        ;
+            : collect([0, 1, 2, 3, 4, 5, 6])->get($this->weekStartsAt + 6 - 7);
 
         $initialYear = $initialYear ?? Carbon::today()->year;
         $initialMonth = $initialMonth ?? Carbon::today()->month;
 
         $this->startsAt = Carbon::createFromDate($initialYear, $initialMonth, 1)->startOfDay();
         $this->endsAt = $this->startsAt->clone()->endOfMonth()->startOfDay();
+
+        $this->selectedDate = $selectedDate ? Carbon::parse($selectedDate)->startOfDay() : Carbon::today()->startOfDay();
+        $this->viewMode = in_array($viewMode, ['month', 'week', 'day'], true) ? $viewMode : 'month';
+        $this->mobileHeaderEnabled = $mobileHeaderEnabled;
+        $this->swipeNavigationEnabled = $swipeNavigationEnabled;
 
         $this->calculateGridStartsEnds();
 
@@ -137,6 +133,27 @@ class LivewireCalendar extends Component
         $this->pollAction = $pollAction;
     }
 
+    public function setViewMode(string $mode)
+    {
+        if (in_array($mode, ['month', 'week', 'day'], true)) {
+            $this->viewMode = $mode;
+        }
+    }
+
+    public function selectDate($year, $month, $day)
+    {
+        $this->selectedDate = Carbon::createFromDate($year, $month, $day)->startOfDay();
+        $this->startsAt = $this->selectedDate->copy()->startOfMonth();
+        $this->endsAt = $this->selectedDate->copy()->endOfMonth()->startOfDay();
+        $this->calculateGridStartsEnds();
+    }
+
+    public function goToToday()
+    {
+        $this->selectedDate = Carbon::today()->startOfDay();
+        $this->goToCurrentMonth();
+    }
+
     public function goToPreviousMonth()
     {
         $this->startsAt->subMonthNoOverflow();
@@ -153,6 +170,38 @@ class LivewireCalendar extends Component
         $this->calculateGridStartsEnds();
     }
 
+    public function goToPreviousWeek()
+    {
+        $this->selectedDate = $this->selectedDate->copy()->subWeek()->startOfDay();
+        $this->startsAt = $this->selectedDate->copy()->startOfMonth();
+        $this->endsAt = $this->selectedDate->copy()->endOfMonth()->startOfDay();
+        $this->calculateGridStartsEnds();
+    }
+
+    public function goToNextWeek()
+    {
+        $this->selectedDate = $this->selectedDate->copy()->addWeek()->startOfDay();
+        $this->startsAt = $this->selectedDate->copy()->startOfMonth();
+        $this->endsAt = $this->selectedDate->copy()->endOfMonth()->startOfDay();
+        $this->calculateGridStartsEnds();
+    }
+
+    public function goToPreviousDay()
+    {
+        $this->selectedDate = $this->selectedDate->copy()->subDay()->startOfDay();
+        $this->startsAt = $this->selectedDate->copy()->startOfMonth();
+        $this->endsAt = $this->selectedDate->copy()->endOfMonth()->startOfDay();
+        $this->calculateGridStartsEnds();
+    }
+
+    public function goToNextDay()
+    {
+        $this->selectedDate = $this->selectedDate->copy()->addDay()->startOfDay();
+        $this->startsAt = $this->selectedDate->copy()->startOfMonth();
+        $this->endsAt = $this->selectedDate->copy()->endOfMonth()->startOfDay();
+        $this->calculateGridStartsEnds();
+    }
+
     public function goToCurrentMonth()
     {
         $this->startsAt = Carbon::today()->startOfMonth()->startOfDay();
@@ -163,8 +212,8 @@ class LivewireCalendar extends Component
 
     public function calculateGridStartsEnds()
     {
-        $this->gridStartsAt = $this->startsAt->clone()->startOfWeek($this->weekStartsAt)->shiftTimezone(config('app.timezone'));;
-        $this->gridEndsAt = $this->endsAt->clone()->endOfWeek($this->weekEndsAt)->shiftTimezone(config('app.timezone'));;
+        $this->gridStartsAt = $this->startsAt->clone()->startOfWeek($this->weekStartsAt)->shiftTimezone(config('app.timezone'));
+        $this->gridEndsAt = $this->endsAt->clone()->endOfWeek($this->weekEndsAt)->shiftTimezone(config('app.timezone'));
     }
 
     /**
@@ -179,31 +228,47 @@ class LivewireCalendar extends Component
         $days = floor(abs($firstDayOfGrid->diffInDays($lastDayOfGrid)) + 1);
 
         if ($days % 7 != 0) {
-            throw new Exception("Livewire Calendar not correctly configured. Check initial inputs.");
+            throw new Exception('Livewire Calendar not correctly configured. Check initial inputs.');
         }
 
         $monthGrid = collect();
         $currentDay = $firstDayOfGrid->clone();
 
-        while(!$currentDay->greaterThan($lastDayOfGrid)) {
+        while (!$currentDay->greaterThan($lastDayOfGrid)) {
             $monthGrid->push($currentDay->clone());
             $currentDay->addDay();
         }
 
         $monthGrid = $monthGrid->chunk(7);
         if ($numbersOfWeeks != $monthGrid->count()) {
-            throw new Exception("Livewire Calendar calculated wrong number of weeks. Sorry :(");
+            throw new Exception('Livewire Calendar calculated wrong number of weeks. Sorry :(');
         }
 
         return $monthGrid;
     }
 
-    public function events() : Collection
+    public function weekDays(): Collection
+    {
+        $start = $this->selectedDate->copy()->startOfWeek($this->weekStartsAt);
+
+        return collect(range(0, 6))->map(function ($offset) use ($start) {
+            return $start->copy()->addDays($offset);
+        });
+    }
+
+    public function timeSlots(): Collection
+    {
+        return collect(range(0, 23))->map(function ($hour) {
+            return Carbon::createFromTime($hour)->format('g:00 A');
+        });
+    }
+
+    public function events(): Collection
     {
         return collect();
     }
 
-    public function getEventsForDay($day, Collection $events) : Collection
+    public function getEventsForDay($day, Collection $events): Collection
     {
         return $events
             ->filter(function ($event) use ($day) {
@@ -214,13 +279,23 @@ class LivewireCalendar extends Component
             });
     }
 
-    /**
-     * Determine if an event occurs on a given day.
-     * Supports legacy 'date' field and new 'start_date'/'end_date' fields.
-     */
+    public function getEventsForHour(Carbon $day, int $hour, Collection $events): Collection
+    {
+        return $this->getEventsForDay($day, $events)->filter(function ($event) use ($hour) {
+            if (!isset($event['start_time'])) {
+                return false;
+            }
+
+            try {
+                return Carbon::parse($event['start_time'])->hour === $hour;
+            } catch (\Throwable $e) {
+                return false;
+            }
+        });
+    }
+
     protected function eventOccursOnDay(array $event, Carbon $day): bool
     {
-        // New multi-day format takes precedence
         if (isset($event['start_date']) && isset($event['end_date'])) {
             $startDate = Carbon::parse($event['start_date'])->startOfDay();
             $endDate = Carbon::parse($event['end_date'])->startOfDay();
@@ -229,7 +304,6 @@ class LivewireCalendar extends Component
             return $checkDay->between($startDate, $endDate);
         }
 
-        // Fallback to legacy 'date' field
         if (isset($event['date'])) {
             return Carbon::parse($event['date'])->isSameDay($day);
         }
@@ -237,13 +311,8 @@ class LivewireCalendar extends Component
         return false;
     }
 
-    /**
-     * Enrich event with day-specific metadata for view rendering.
-     * Adds position info (is_first_day, is_last_day, is_multiday, day_position).
-     */
     protected function enrichEventForDay(array $event, Carbon $day): array
     {
-        // Legacy single-day events - add minimal metadata
         if (!isset($event['start_date']) || !isset($event['end_date'])) {
             $event['is_multiday'] = false;
             $event['is_first_day'] = true;
@@ -272,7 +341,7 @@ class LivewireCalendar extends Component
 
     public function onDayClick($year, $month, $day)
     {
-        //
+        $this->selectDate($year, $month, $day);
     }
 
     public function onEventClick($eventId)
@@ -287,12 +356,10 @@ class LivewireCalendar extends Component
 
     public function getId()
     {
-        // Livewire 3+ has getId() on base Component class
         if (method_exists(parent::class, 'getId')) {
             return parent::getId();
         }
 
-        // Fallback for Livewire 2
         if (!empty($this->__id)) {
             return $this->__id;
         }
@@ -304,6 +371,22 @@ class LivewireCalendar extends Component
         return 'livewire-calendar-' . uniqid();
     }
 
+    public function getHeaderLabelProperty(): string
+    {
+        if ($this->viewMode === 'week') {
+            $weekStart = $this->selectedDate->copy()->startOfWeek($this->weekStartsAt);
+            $weekEnd = $weekStart->copy()->endOfWeek($this->weekEndsAt);
+
+            return $weekStart->format('M j') . ' - ' . $weekEnd->format('M j');
+        }
+
+        if ($this->viewMode === 'day') {
+            return $this->selectedDate->format('D, M j');
+        }
+
+        return $this->startsAt->format('F Y');
+    }
+
     /**
      * @return Factory|View
      * @throws Exception
@@ -311,15 +394,37 @@ class LivewireCalendar extends Component
     public function render()
     {
         $events = $this->events();
+        $hours = $this->timeSlots();
+        $hourIndexMap = $hours->mapWithKeys(function ($value, $index) {
+            return [$value => $index];
+        });
+
+        $selectedDayEvents = $this->getEventsForDay($this->selectedDate, $events);
+        $allDayEvents = $selectedDayEvents->filter(function ($event) {
+            return !isset($event['start_time']) && !isset($event['end_time']);
+        });
+        $timedDayEvents = $selectedDayEvents->reject(function ($event) {
+            return !isset($event['start_time']) && !isset($event['end_time']);
+        })->sortBy('start_time')->values();
 
         return view($this->calendarView)
             ->with([
                 'componentId' => $this->getId(),
                 'monthGrid' => $this->monthGrid(),
                 'events' => $events,
+                'weekDays' => $this->weekDays(),
+                'hours' => $hours,
+                'hourIndexMap' => $hourIndexMap,
+                'selectedWeekEvents' => $selectedDayEvents,
+                'allDayEvents' => $allDayEvents,
+                'timedDayEvents' => $timedDayEvents,
+                'headerLabel' => $this->headerLabel,
                 'getEventsForDay' => function ($day) use ($events) {
                     return $this->getEventsForDay($day, $events);
-                }
+                },
+                'getEventsForHour' => function ($day, $hour, $eventsInput = null) use ($events) {
+                    return $this->getEventsForHour($day, $hour, $eventsInput ?? $events);
+                },
             ]);
     }
 }
