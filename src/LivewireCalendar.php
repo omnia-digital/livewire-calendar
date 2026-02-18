@@ -58,12 +58,14 @@ class LivewireCalendar extends Component
     public $dragAndDropEnabled;
     public $dayClickEnabled;
     public $eventClickEnabled;
+    public $selectedDay;
 
     protected $casts = [
         'startsAt' => 'date',
         'endsAt' => 'date',
         'gridStartsAt' => 'date',
         'gridEndsAt' => 'date',
+        'selectedDay' => 'date',
     ];
 
     public function mount($initialYear = null,
@@ -106,6 +108,8 @@ class LivewireCalendar extends Component
 
         $this->dayClickEnabled = $dayClickEnabled;
         $this->eventClickEnabled = $eventClickEnabled;
+
+        $this->selectedDay = Carbon::today()->startOfDay();
 
         $this->afterMount($extras);
     }
@@ -157,6 +161,7 @@ class LivewireCalendar extends Component
     {
         $this->startsAt = Carbon::today()->startOfMonth()->startOfDay();
         $this->endsAt = $this->startsAt->clone()->endOfMonth()->startOfDay();
+        $this->selectedDay = Carbon::today()->startOfDay();
 
         $this->calculateGridStartsEnds();
     }
@@ -270,9 +275,14 @@ class LivewireCalendar extends Component
         return $event;
     }
 
+    public function selectDay($year, $month, $day)
+    {
+        $this->selectedDay = Carbon::createFromDate($year, $month, $day)->startOfDay();
+    }
+
     public function onDayClick($year, $month, $day)
     {
-        //
+        $this->selectDay($year, $month, $day);
     }
 
     public function onEventClick($eventId)
