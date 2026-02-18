@@ -10,8 +10,8 @@
     </div>
 
     <div class="flex">
-        <div class="overflow-x-auto w-full">
-            <div class="inline-block min-w-full overflow-hidden">
+        <div class="w-full">
+            <div class="w-full overflow-hidden">
 
                 <div class="w-full flex flex-row">
                     @foreach($monthGrid->first() as $day)
